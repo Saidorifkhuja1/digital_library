@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-yvfg_b@#lb(k$!o3bqldgos1^-6$7lhm$c#-%mgpy+s8qcj_p7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'books',
     'drf_yasg',
     'rest_framework_simplejwt',
+    'news',
+
 ]
 
 MIDDLEWARE = [
