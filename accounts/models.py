@@ -50,9 +50,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=250)
     phone_number = models.CharField(validators=[PHONE_REGEX], max_length=21, unique=True, default="+998931112233")
     email = models.EmailField(unique=True)
-    read_books = models.ManyToManyField('books.Book', related_name='reader', blank=True)
-    uploaded_books = models.ManyToManyField('books.Book', related_name='uploader', blank=True)
-    notification = models.ManyToManyField('Notification', related_name='user_notification', blank=True)
+    location = models.TextField(max_length=500, default=False)
+    # read_books = models.ManyToManyField('books.Book', related_name='reader', blank=True)
+    # notification = models.ManyToManyField('Notification', related_name='user_notification', blank=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -69,11 +69,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         return self.is_admin
 
-class Notification(models.Model):
-    user = models.ForeignKey(User, related_name='user_notification', on_delete=models.CASCADE)
-    message = models.TextField()
-    is_read = models.BooleanField(default=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'Notification for {self.user}'
+# class Notification(models.Model):
+#     user = models.ForeignKey(User, related_name='user_notification', on_delete=models.CASCADE)
+#     message = models.TextField()
+#     is_read = models.BooleanField(default=False)
+#     timestamp = models.DateTimeField(auto_now_add=True)
+#
+#     def __str__(self):
+#         return f'Notification for {self.user}'

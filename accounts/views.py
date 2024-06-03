@@ -1,5 +1,3 @@
-
-from books.permissions import IsOwnerOrReadOnly
 from .serializers import *
 from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticated
@@ -43,24 +41,6 @@ class DeleteProfileAPIView(generics.DestroyAPIView):
         return User.objects.filter(id=user_id)
 
 
-class NotificationListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        decoded_token = unhash_token(self.request.headers)
-        user_id = decoded_token.get('user_id')
-        serializer.save(user_id=user_id)
-
-
-class NotificationDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_update(self, serializer):
-        serializer.save(is_read=True)
 
 
 
@@ -70,7 +50,26 @@ class NotificationDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
+# class NotificationListCreateAPIView(generics.ListCreateAPIView):
+#     queryset = Notification.objects.all()
+#     serializer_class = NotificationSerializer
+#     permission_classes = [IsAuthenticated]
 #
+#     def perform_create(self, serializer):
+#         decoded_token = unhash_token(self.request.headers)
+#         user_id = decoded_token.get('user_id')
+#         serializer.save(user_id=user_id)
+#
+#
+# class NotificationDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Notification.objects.all()
+#     serializer_class = NotificationSerializer
+#     permission_classes = [IsAuthenticated]
+#
+#     def perform_update(self, serializer):
+#         serializer.save(is_read=True)
+
+
 # class UserRegistrationAPIView(generics.CreateAPIView):
 #     queryset = User.objects.all()
 #     serializer_class = UserRegistrationSerializer

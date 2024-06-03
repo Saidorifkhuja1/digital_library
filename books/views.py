@@ -1,5 +1,4 @@
-from .models import *
-from .permissions import IsOwnerOrReadOnly
+from django.http import FileResponse, Http404
 from .serializers import *
 from accounts.utils import unhash_token
 from django_filters.rest_framework import DjangoFilterBackend
@@ -37,9 +36,6 @@ class CreateBookAPIView(generics.CreateAPIView):
         decoded_token = unhash_token(self.request.headers)
         user_id = decoded_token.get('user_id')
         serializer.save(uploaded_by=user_id)
-
-
-
 
 
 
@@ -89,21 +85,45 @@ class SearchByNameAPIView(generics.ListAPIView):
     search_fields = ['title']
 
 
-class ReviewListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        decoded_token = unhash_token(self.request.headers)
-        user_id = decoded_token.get('user_id')
-        serializer.save(user_id=user_id)
 
 
-class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+class BookDownloadView(generics.GenericAPIView):
+    queryset = Book.objects.all()
+    lookup_field = 'pk'
+    def get(self, request, *args, **kwargs):
+        book = self.get_object()
+        if book.pdf:
+            try:
+                response = FileResponse(book.pdf.open('rb'), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="{book.pdf.name}"'
+                return response
+            except FileNotFoundError:
+                raise Http404("File not found")
+        else:
+            raise Http404("PDF file not available for this book")
+
+
+
+
+
+
+
+
+# class ReviewListCreateAPIView(generics.ListCreateAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+#     permission_classes = [IsAuthenticated]
+#
+#     def perform_create(self, serializer):
+#         decoded_token = unhash_token(self.request.headers)
+#         user_id = decoded_token.get('user_id')
+#         serializer.save(user_id=user_id)
+#
+#
+# class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+#     permission_classes = [IsOwnerOrReadOnly]
 
 
 

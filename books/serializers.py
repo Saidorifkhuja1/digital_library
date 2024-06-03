@@ -28,11 +28,11 @@ class BookBaseSerializer(serializers.ModelSerializer):
 
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = ['id', 'book', 'user', 'rating', 'comment', 'timestamp']
-        read_only_fields = ['id', 'user', 'timestamp']
+# class ReviewSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Review
+#         fields = ['id', 'book', 'user', 'rating', 'comment', 'timestamp']
+#         read_only_fields = ['id', 'user', 'timestamp']
 
 
 

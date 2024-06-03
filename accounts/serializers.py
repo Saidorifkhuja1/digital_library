@@ -43,11 +43,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'phone_number', 'name', 'last_name', 'email']
 
 
-class NotificationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Notification
-        fields = ['id', 'user', 'message', 'is_read', 'timestamp']
-        read_only_fields = ['user', 'timestamp']
+# class NotificationSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Notification
+#         fields = ['id', 'user', 'message', 'is_read', 'timestamp']
+#         read_only_fields = ['user', 'timestamp']
 
 
 
