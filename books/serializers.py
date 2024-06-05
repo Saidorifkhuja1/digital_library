@@ -7,7 +7,7 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = '__all__'
-        read_only_fields = ['uploaded_by', 'read_by']
+        read_only_fields = ['title', 'author']
 
     def create(self, validated_data):
         request = self.context.get('request')
