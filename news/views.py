@@ -29,8 +29,9 @@ class NewsUpdateAPIView(generics.UpdateAPIView):
 
     def get_queryset(self):
         print(self.request.headers)
+        if getattr(self, 'swagger_fake_view', False):
+            return News.objects.none()
         decoded_token = unhash_token(self.request.headers)
-
         user_id = decoded_token.get('user_id')
         if not user_id:
             raise AuthenticationFailed("User ID not found")
