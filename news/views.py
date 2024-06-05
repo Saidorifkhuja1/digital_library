@@ -28,7 +28,9 @@ class NewsUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        print(self.request.headers)
         decoded_token = unhash_token(self.request.headers)
+
         user_id = decoded_token.get('user_id')
         if not user_id:
             raise AuthenticationFailed("User ID not found")

@@ -72,6 +72,7 @@ class SearchByNameAPIView(generics.ListAPIView):
 
 class BookDownloadView(generics.GenericAPIView):
     queryset = Book.objects.all()
+    serializer_class = BookBaseSerializer
     lookup_field = 'pk'
     def get(self, request, *args, **kwargs):
         book = self.get_object()
