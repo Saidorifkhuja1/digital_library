@@ -50,9 +50,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=250)
     phone_number = models.CharField(validators=[PHONE_REGEX], max_length=21, unique=True, default="+998931112233")
     email = models.EmailField(unique=True)
-    location = models.TextField(max_length=500, default=False)
-    # read_books = models.ManyToManyField('books.Book', related_name='reader', blank=True)
-    # notification = models.ManyToManyField('Notification', related_name='user_notification', blank=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)

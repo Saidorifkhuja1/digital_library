@@ -10,6 +10,7 @@ urlpatterns = [
     path('booktypesearch/', SearchByTypeAPIView.as_view()),
     path('booknamesearch/', SearchByNameAPIView.as_view()),
     path('deletebook/<int:pk>/', DeleteBookAPIView.as_view()),
+    path('savebook/<int:pk>/', SaveBookAPIView.as_view()),
     path('books/download/<int:pk>/', BookDownloadView.as_view(), name='book-download'),
     # path('reviews/', ReviewListCreateAPIView.as_view(), name='review-list-create'),
     # path('reviewsupdate/<int:pk>/', ReviewDetailAPIView.as_view(), name='review-detail'),

@@ -13,9 +13,10 @@ class Book(models.Model):
     author = models.CharField(max_length=250)
     genre = models.ForeignKey(Type, related_name='type', on_delete=models.CASCADE)
     description = models.TextField()
-    pdf = models.FileField(upload_to='books/', validators=[FileExtensionValidator(['pdf'])])
+    pdf = models.FileField(upload_to='books/', validators=[FileExtensionValidator(['pdf'])], blank=True, null=True)
     cover_image = models.ImageField(upload_to='books/covers/', blank=True, null=True)
     uploaded_by = models.ForeignKey('accounts.User', on_delete=models.CASCADE, default=False)
+    location = models.TextField(max_length=500, default=False)
 
 
     def __str__(self):

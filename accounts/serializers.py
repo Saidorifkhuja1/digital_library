@@ -6,21 +6,24 @@ from rest_framework import serializers
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
+    is_admin = serializers.BooleanField(write_only=True, required=False)
 
     class Meta:
         model = User
-        fields = ['name', 'last_name', 'phone_number', 'email', 'password', 'confirm_password']
+        fields = ['name', 'last_name', 'phone_number', 'email', 'password', 'confirm_password', 'is_admin']
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError('Password dont match')
+            raise serializers.ValidationError('Passwords do not match')
         return data
 
     def create(self, validated_data):
         validated_data.pop('confirm_password')
+        is_admin = validated_data.pop('is_admin', False)
         user = User.objects.create_user(**validated_data)
+        user.is_admin = is_admin
+        user.save()
         return user
-
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
