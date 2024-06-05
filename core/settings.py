@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -43,6 +45,9 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework_simplejwt',
     'news',
+    "corsheaders",
+
+
 
 ]
 
