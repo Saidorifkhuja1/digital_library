@@ -1,9 +1,10 @@
 from .models import *
-
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 
 class BookSerializer(serializers.ModelSerializer):
+    photo = Base64ImageField(allow_null=True, required=False)
     class Meta:
         model = Book
         fields = '__all__'
