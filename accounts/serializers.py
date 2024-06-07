@@ -10,7 +10,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['name', 'last_name', 'phone_number', 'email', 'password', 'confirm_password', 'is_admin']
+        fields = ['name', 'last_name', 'phone_number', 'email', 'password', 'confirm_password', 'is_admin', 'avatar']
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -28,13 +28,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['name', 'last_name', 'phone_number', 'email']
+        fields = ['name', 'last_name', 'phone_number', 'email', 'avatar']
         read_only_fields = ['phone_number']
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
+        instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.save()
         return instance
 
@@ -43,7 +44,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'phone_number', 'name', 'last_name', 'email']
+        fields = ['id', 'phone_number', 'name', 'last_name', 'email', 'avatar']
 
 
 # class NotificationSerializer(serializers.ModelSerializer):
