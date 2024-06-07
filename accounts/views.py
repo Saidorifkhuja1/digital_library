@@ -4,7 +4,8 @@ from .serializers import *
 from rest_framework import generics, permissions, status
 from rest_framework.permissions import IsAuthenticated
 from .utils import unhash_token
-
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import NotFound
 
 class UserRegistrationAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -36,13 +37,19 @@ class UpdateProfileView(generics.UpdateAPIView):
 
 class RetrieveProfileView(generics.RetrieveAPIView):
     serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
+    permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
+    def get(self, request, *args, **kwargs):
         decoded_token = unhash_token(self.request.headers)
         user_id = decoded_token.get('user_id')
-        return User.objects.filter(id=user_id)
+
+        if not user_id:
+            raise NotFound("User not found")
+
+        user = get_object_or_404(User, id=user_id)
+        serializer = self.get_serializer(user)
+
+        return Response(serializer.data)
 
 
 class DeleteProfileAPIView(generics.DestroyAPIView):
