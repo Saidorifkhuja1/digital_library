@@ -25,7 +25,10 @@ class BookBaseSerializer(serializers.ModelSerializer):
         read_only_fields = ['uploaded_by', 'read_by']
 
 
-
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = ['user', 'book', 'added_at']
 
 
 

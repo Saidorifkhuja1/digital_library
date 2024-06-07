@@ -1,6 +1,6 @@
 from django.core.validators import *
 from django.db import models
-
+from django.conf import settings
 class Type(models.Model):
     name = models.CharField(max_length=2500)
     def __str__(self):
@@ -21,6 +21,19 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.book.title} in {self.user.name}'s cart"
+
 
 
 

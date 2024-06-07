@@ -4,11 +4,9 @@ from accounts.utils import unhash_token
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework import generics, permissions
-from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
+from rest_framework import generics, permissions, status
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import status
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
@@ -106,27 +104,55 @@ class BookDownloadView(generics.GenericAPIView):
 
 
 
+class UserCartView(generics.RetrieveAPIView):
+    serializer_class = CartSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-
-class SaveBookAPIView(APIView):
-    def post(self, request, *args, **kwargs):
+    def get_object(self):
+        decoded_token = unhash_token(self.request.headers)
+        user_id = decoded_token('user_id')
         try:
-            decoded_token = unhash_token(request.headers)
-            user_id = decoded_token.get('user_id')
-            if not user_id:
-                raise AuthenticationFailed("User ID not found")
+            cart = Cart.objects.get(user_id=user_id)
+        except Cart.DoesNotExist:
+            raise NotFound('Cart not found for this user ')
+        return cart
 
-            book_id = request.data.get('book_id')
-            if not book_id:
-                return Response({'error': 'Book ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+class AddToCardView(generics.CreateAPIView):
+    serializer_class = CartSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-            book = Book.objects.filter(id=book_id).first()
-            if not book:
-                return Response({'error': 'Book not found'}, status=status.HTTP_404_NOT_FOUND)
+    def perform_create(self, serializer):
+        decoded_token = unhash_token(self.request.headers)
+        user_id = decoded_token('user_id')
+        book_id = self.request.data.get('book_id')
+        try:
+            book = Book.objects.get(id=book_id)
+        except Book.DoesNotExist:
+            raise NotFound('Book not found')
 
-            user = request.user
-            user.saved_books.add(book)
-            return Response({'message': 'Book saved successfully'}, status=status.HTTP_200_OK)
+        cart, created = Cart.objects.get_or_create(user_id=user_id, book=book)
+        if not created:
+            raise serializers.ValidationError('Book already in cart ')
 
-        except AuthenticationFailed as e:
-            return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+
+class RemoveFromCartView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        decoded_token = unhash_token(request.headers)
+        user_id = decoded_token.get('user_id')
+        book_id = kwargs.get('book_id')
+
+        try:
+            cart_item = Cart.objects.get(user_id=user_id, book_id=book_id)
+        except Cart.DoesNotExist:
+            raise NotFound("Book not found in cart")
+
+        cart_item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
