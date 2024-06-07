@@ -17,6 +17,8 @@ class Book(models.Model):
     cover_image = models.ImageField(upload_to='books/covers/', blank=True, null=True)
     uploaded_by = models.ForeignKey('accounts.User', on_delete=models.CASCADE, default=False)
     location = models.TextField(max_length=500, default=False)
+    views = models.IntegerField(default=0)
+    downloads = models.IntegerField(default=0)
 
 
     def __str__(self):

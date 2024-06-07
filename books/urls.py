@@ -10,6 +10,7 @@ urlpatterns = [
     path('booktypesearch/', SearchByTypeAPIView.as_view()),
     path('booknamesearch/', SearchByNameAPIView.as_view()),
     path('deletebook/<int:pk>/', DeleteBookAPIView.as_view()),
+    path('recomended_book/', RecomendedBooksView.as_view()),
     path('get_cart/', UserCartView.as_view()),
     path('add_cart/', AddToCardView.as_view()),
     path('cart_delete/', RemoveFromCartView.as_view()),

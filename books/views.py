@@ -15,6 +15,13 @@ class BookListAPIView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookBaseSerializer
 
+    def get(self, request, *args, **kwargs):
+        books = self.get_queryset()
+        for book in books:
+            book.views += 1
+            book.save()
+        serializer = self.get_serializer(books, many=True)
+        return Response(serializer.data)
 
 
 
@@ -92,6 +99,9 @@ class BookDownloadView(generics.GenericAPIView):
         user_id = decoded_token.get('user_id')
 
         book = self.get_object()
+        book.downloads += 1
+        book.save()
+
         if book.pdf:
             try:
                 response = FileResponse(book.pdf.open('rb'), content_type='application/pdf')
@@ -101,6 +111,22 @@ class BookDownloadView(generics.GenericAPIView):
                 raise Http404("File not found")
         else:
             raise Http404("PDF file not available for this book")
+
+
+
+
+
+class RecomendedBooksView(generics.ListAPIView):
+    serializer_class = BookBaseSerializer
+
+    def get_queryset(self):
+        return Book.objects.order_by('-views', '-downloads')[:10]
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.queryset
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 
 
@@ -116,6 +142,8 @@ class UserCartView(generics.RetrieveAPIView):
         except Cart.DoesNotExist:
             raise NotFound('Cart not found for this user ')
         return cart
+
+
 
 class AddToCardView(generics.CreateAPIView):
     serializer_class = CartSerializer
@@ -133,6 +161,8 @@ class AddToCardView(generics.CreateAPIView):
         cart, created = Cart.objects.get_or_create(user_id=user_id, book=book)
         if not created:
             raise serializers.ValidationError('Book already in cart ')
+
+
 
 
 class RemoveFromCartView(generics.DestroyAPIView):
