@@ -70,13 +70,19 @@ class DeleteBookAPIView(generics.DestroyAPIView):
 
 
 class SearchByTypeAPIView(generics.ListAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookBaseSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    search_fields = ['type']
+    serializer_class = BookSerializer
 
+    def get_queryset(self):
+        genre_id = self.kwargs.get('genre_id')
+        return Book.objects.filter(genre_id=genre_id)
 
-
+class SearchByAuthorAPIView(generics.ListAPIView):
+    serializer_class = BookSerializer
+    def get_queryset(self):
+        author_name = self.request.query_params.get('author', None)
+        if author_name:
+            return Book.objects.filter(author__name__icontains=author_name)
+        return Book.objects.none()
 
 class SearchByNameAPIView(generics.ListAPIView):
     queryset = Book.objects.all()

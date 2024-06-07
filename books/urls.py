@@ -8,6 +8,7 @@ urlpatterns = [
     path('booklist/', BookListAPIView.as_view()),
     path('bookdetail/<int:pk>/', BookDetailAPIView.as_view()),
     path('booktypesearch/', SearchByTypeAPIView.as_view()),
+    path('author_search/', SearchByAuthorAPIView.as_view()),
     path('booknamesearch/', SearchByNameAPIView.as_view()),
     path('deletebook/<int:pk>/', DeleteBookAPIView.as_view()),
     path('recomended_book/', RecomendedBooksView.as_view()),

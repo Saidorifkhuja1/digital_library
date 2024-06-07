@@ -8,9 +8,15 @@ class Type(models.Model):
 
 
 
+class Author(models.Model):
+    name = models.CharField(max_length=2500)
+    def __str__(self):
+       return self.name
+
+
 class Book(models.Model):
     title = models.CharField(max_length=250)
-    author = models.CharField(max_length=250)
+    author = models.ForeignKey(Author, related_name='type', on_delete=models.CASCADE)
     genre = models.ForeignKey(Type, related_name='type', on_delete=models.CASCADE)
     description = models.TextField()
     pdf = models.FileField(upload_to='books/', validators=[FileExtensionValidator(['pdf'])], blank=True, null=True)

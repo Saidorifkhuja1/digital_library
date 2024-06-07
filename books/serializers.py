@@ -30,7 +30,10 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = ['user', 'book', 'added_at']
 
-
+class AuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ['id', 'name']
 
 # class ReviewSerializer(serializers.ModelSerializer):
 #     class Meta:
