@@ -68,21 +68,39 @@ class DeleteBookAPIView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         instance.delete()
 
+class BookGenreAPIView(generics.ListAPIView):
+    serializer_class = TypeSerializer
+    queryset = Type.objects.all()
 
-class SearchByTypeAPIView(generics.ListAPIView):
-    serializer_class = BookSerializer
 
-    def get_queryset(self):
-        genre_id = self.kwargs.get('genre_id')
-        return Book.objects.filter(genre_id=genre_id)
+# class SearchByTypeAPIView(generics.ListAPIView):
+#     serializer_class = BookSerializer
+#
+#     def get_queryset(self):
+#         genre_id = self.kwargs.get('genre_id')
+#         return Book.objects.filter(genre_id=genre_id)
 
-class SearchByAuthorAPIView(generics.ListAPIView):
-    serializer_class = BookSerializer
-    def get_queryset(self):
-        author_name = self.request.query_params.get('author', None)
-        if author_name:
-            return Book.objects.filter(author__name__icontains=author_name)
-        return Book.objects.none()
+
+
+
+
+class BookAuthorAPIView(generics.ListAPIView):
+    serializer_class = AuthorSerializer
+    queryset = Author.objects.all()
+
+
+
+
+# class SearchByAuthorAPIView(generics.ListAPIView):
+#     serializer_class = BookSerializer
+#     def get_queryset(self):
+#         author_name = self.request.query_params.get('author', None)
+#         if author_name:
+#             return Book.objects.filter(author__name__icontains=author_name)
+#         return Book.objects.none()
+
+
+
 
 class SearchByNameAPIView(generics.ListAPIView):
     queryset = Book.objects.all()
