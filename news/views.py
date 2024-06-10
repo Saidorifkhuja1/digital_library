@@ -3,6 +3,7 @@ from rest_framework import generics, permissions
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.permissions import BasePermission
 from accounts.utils import unhash_token
+from books.views import APIListPagination
 from .models import *
 from .serializers import *
 
@@ -10,6 +11,7 @@ from .serializers import *
 class NewsListAPIView(generics.ListAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+    pagination_class = APIListPagination
 
 
 

@@ -21,6 +21,7 @@ class APIListPagination(PageNumberPagination):
 class BookListAPIView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookBaseSerializer
+    pagination_class = APIListPagination
 
     def get(self, request, *args, **kwargs):
         books = self.get_queryset()
@@ -77,6 +78,7 @@ class DeleteBookAPIView(generics.DestroyAPIView):
 class BookGenreAPIView(generics.ListAPIView):
     serializer_class = TypeSerializer
     queryset = Type.objects.all()
+    pagination_class = APIListPagination
 
 
 # class SearchByTypeAPIView(generics.ListAPIView):
@@ -93,6 +95,7 @@ class BookGenreAPIView(generics.ListAPIView):
 class BookAuthorAPIView(generics.ListAPIView):
     serializer_class = AuthorSerializer
     queryset = Author.objects.all()
+    pagination_class = APIListPagination
 
 
 
