@@ -25,6 +25,7 @@ class BookListAPIView(generics.ListAPIView):
     pagination_class = APIListPagination
 
 
+
 class BookDetailAPIView(generics.RetrieveAPIView):
     serializer_class = BookBaseSerializer
     queryset = Book.objects.all()
@@ -40,8 +41,28 @@ class BookDetailAPIView(generics.RetrieveAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            return self.queryset.filter(author=user)
+            return self.queryset.filter(uploaded_by=user)
         return self.queryset.none()
+
+
+
+# class BookDetailAPIView(generics.RetrieveAPIView):
+#     serializer_class = BookBaseSerializer
+#     queryset = Book.objects.all()
+#     permission_classes = [permissions.IsAuthenticated]
+#
+#     def retrieve(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         instance.views += 1
+#         instance.save()
+#         serializer = self.get_serializer(instance)
+#         return Response(serializer.data)
+#
+#     def get_queryset(self):
+#         user = self.request.user
+#         if user.is_authenticated:
+#             return self.queryset.filter(author=user)
+#         return self.queryset.none()
 
 
 
@@ -79,13 +100,6 @@ class BookGenreAPIView(generics.ListAPIView):
     pagination_class = APIListPagination
 
 
-# class SearchByTypeAPIView(generics.ListAPIView):
-#     serializer_class = BookSerializer
-#
-#     def get_queryset(self):
-#         genre_id = self.kwargs.get('genre_id')
-#         return Book.objects.filter(genre_id=genre_id)
-
 
 
 
@@ -98,13 +112,6 @@ class BookAuthorAPIView(generics.ListAPIView):
 
 
 
-# class SearchByAuthorAPIView(generics.ListAPIView):
-#     serializer_class = BookSerializer
-#     def get_queryset(self):
-#         author_name = self.request.query_params.get('author', None)
-#         if author_name:
-#             return Book.objects.filter(author__name__icontains=author_name)
-#         return Book.objects.none()
 
 
 
