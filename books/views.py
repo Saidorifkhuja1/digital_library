@@ -10,6 +10,13 @@ from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework.pagination import PageNumberPagination
+class APIListPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
 
 class BookListAPIView(generics.ListAPIView):
     queryset = Book.objects.all()
@@ -22,7 +29,6 @@ class BookListAPIView(generics.ListAPIView):
             book.save()
         serializer = self.get_serializer(books, many=True)
         return Response(serializer.data)
-
 
 
 class BookDetailAPIView(generics.RetrieveAPIView):
