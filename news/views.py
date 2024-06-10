@@ -11,7 +11,7 @@ from .serializers import *
 class NewsListAPIView(generics.ListAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
-    # pagination_class = APIListPagination
+    pagination_class = APIListPagination
 
 
 
