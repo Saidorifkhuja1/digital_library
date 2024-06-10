@@ -153,7 +153,7 @@ class RecomendedBooksView(generics.ListAPIView):
     serializer_class = BookBaseSerializer
 
     def get_queryset(self):
-        return Book.objects.order_by('-views', '-downloads')[:10]
+        return Book.objects.all().order_by('-views', '-downloads')[:10]
 
     def get(self, request, *args, **kwargs):
         queryset = self.queryset
