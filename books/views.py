@@ -28,15 +28,20 @@ class BookListAPIView(generics.ListAPIView):
 class BookDetailAPIView(generics.RetrieveAPIView):
     serializer_class = BookBaseSerializer
     queryset = Book.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.views += 1
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
             return self.queryset.filter(author=user)
-        else:
-            return self.queryset.none()
-
+        return self.queryset.none()
 
 
 
@@ -123,7 +128,6 @@ class BookDownloadView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         decoded_token = unhash_token(request.headers)
         user_id = decoded_token.get('user_id')
-
         book = self.get_object()
         book.downloads += 1
         book.save()
@@ -142,17 +146,16 @@ class BookDownloadView(generics.GenericAPIView):
 
 
 
-class RecomendedBooksView(generics.ListAPIView):
+class RecommendedBooksView(generics.ListAPIView):
     serializer_class = BookBaseSerializer
 
     def get_queryset(self):
         return Book.objects.all().order_by('-views', '-downloads')[:10]
 
-    def get(self, request, *args, **kwargs):
-        queryset = self.queryset
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
 
 
 
