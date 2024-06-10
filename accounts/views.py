@@ -55,6 +55,7 @@ class RetrieveProfileView(generics.RetrieveAPIView):
 class DeleteProfileAPIView(generics.DestroyAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
 
     def get_queryset(self):
         decoded_token = unhash_token(self.request.headers)
