@@ -18,7 +18,17 @@ class BookSerializer(serializers.ModelSerializer):
         return book
 
 
+class AuthorSerializer(serializers.ModelSerializer):
+    books = BookSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Author
+        fields = ['id', 'name', 'books']
+
+
 class BookBaseSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer()
+
     class Meta:
         model = Book
         fields = '__all__'
@@ -29,14 +39,6 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['user', 'book', 'added_at']
-
-class AuthorSerializer(serializers.ModelSerializer):
-    books = BookSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Author
-        fields = ['id', 'name', 'books']
-
 
 
 class TypeSerializer(serializers.ModelSerializer):
