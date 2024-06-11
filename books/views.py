@@ -29,7 +29,7 @@ class BookListAPIView(generics.ListAPIView):
 class BookDetailAPIView(generics.RetrieveAPIView):
     serializer_class = BookBaseSerializer
     queryset = Book.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -38,11 +38,7 @@ class BookDetailAPIView(generics.RetrieveAPIView):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated:
-            return self.queryset.filter(uploaded_by=user)
-        return self.queryset.none()
+
 
 
 
