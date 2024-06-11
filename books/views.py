@@ -170,7 +170,7 @@ class UserCartView(generics.RetrieveAPIView):
 
     def get_object(self):
         decoded_token = unhash_token(self.request.headers)
-        user_id = decoded_token('user_id')
+        user_id = decoded_token['user_id']
         try:
             cart = Cart.objects.get(user_id=user_id)
         except Cart.DoesNotExist:
@@ -185,7 +185,7 @@ class AddToCardView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         decoded_token = unhash_token(self.request.headers)
-        user_id = decoded_token('user_id')
+        user_id = decoded_token['user_id']
         book_id = self.request.data.get('book_id')
         try:
             book = Book.objects.get(id=book_id)
@@ -200,11 +200,11 @@ class AddToCardView(generics.CreateAPIView):
 
 
 class RemoveFromCartView(generics.DestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def delete(self, request, *args, **kwargs):
         decoded_token = unhash_token(request.headers)
-        user_id = decoded_token.get('user_id')
+        user_id = decoded_token.get['user_id']
         book_id = kwargs.get('book_id')
 
         try:
