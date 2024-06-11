@@ -32,7 +32,7 @@ class BookBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = '__all__'
-        read_only_fields = ['uploaded_by', 'read_by']
+        read_only_fields = ['uploaded_by', 'views', 'downloads']
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -42,7 +42,7 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class TypeSerializer(serializers.ModelSerializer):
-    books = BookSerializer(many=True, read_only=True)
+    books = BookSerializer(many=True, read_only=True, source='book_set')
 
     class Meta:
         model = Type

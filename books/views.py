@@ -90,6 +90,8 @@ class DeleteBookAPIView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         instance.delete()
 
+
+
 class BookGenreAPIView(generics.ListAPIView):
     serializer_class = TypeSerializer
     queryset = Type.objects.all()
