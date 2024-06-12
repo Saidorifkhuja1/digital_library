@@ -12,7 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.pagination import PageNumberPagination
-
+from django.shortcuts import get_object_or_404
+from accounts.models import User
 
 
 
@@ -240,9 +241,26 @@ class AddToCardView(generics.CreateAPIView):
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        decoded_token = unhash_token(request.headers)
+        user_id = decoded_token.get('user_id')
+        book_id = request.data.get('book')
+
+
+        book = get_object_or_404(Book, id = book_id)
+        user = get_object_or_404(User, id = user_id)
+
+        if not (user and book):
+            return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
+        if not Cart.objects.filter(book__id=book.id).exists():
+            cart = Cart.objects.create(user=user, book=book)
+        else:
+            return Response({"error": "Book already in cart"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
+        return Response(CartSerializer(cart).data, status=status.HTTP_201_CREATED)
+    #
 
 
 class RemoveFromCartView(generics.DestroyAPIView):

@@ -1,8 +1,11 @@
 from django.core.validators import *
 from django.db import models
 from django.conf import settings
+
+
 class Type(models.Model):
     name = models.CharField(max_length=2500)
+
     def __str__(self):
        return self.name
 
@@ -10,6 +13,7 @@ class Type(models.Model):
 
 class Author(models.Model):
     name = models.CharField(max_length=2500)
+
     def __str__(self):
        return self.name
 
@@ -31,30 +35,14 @@ class Book(models.Model):
         return self.title
 
 
-
-
-
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.OneToOneField(Book, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
 
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(fields=['user_id', 'book_id'], name='unique_user_book')
+    #     ]
     def __str__(self):
         return f"{self.book.title} in {self.user.name}'s cart"
-
-
-
-
-# class Review(models.Model):
-#     book = models.ForeignKey(Book, related_name='reviews', on_delete=models.CASCADE)
-#     user = models.ForeignKey('accounts.User', related_name='reviews', on_delete=models.CASCADE)
-#     rating = models.PositiveSmallIntegerField()
-#     comment = models.TextField()
-#     timestamp = models.DateTimeField(auto_now_add=True)
-#
-#     def __str__(self):
-#         return f'Review by {self.user}   for   {self.book}'
-
-
-
-
