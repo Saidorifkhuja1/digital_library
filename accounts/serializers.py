@@ -1,7 +1,7 @@
 from .models import *
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-
+from django.contrib.auth.hashers import make_password
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -15,6 +15,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError('Passwords do not match')
+        else:
+            make_password(data['password'])
         return data
 
     def create(self, validated_data):
