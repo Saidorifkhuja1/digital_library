@@ -163,43 +163,34 @@ class RecommendedBooksView(generics.ListAPIView):
         return Response(serializer.data)
 
 
-
-class UserCartView(generics.RetrieveAPIView):
+class UserCartView(generics.ListAPIView):
     serializer_class = CartSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_object(self):
+    def get_queryset(self):
         decoded_token = unhash_token(self.request.headers)
         user_id = decoded_token['user_id']
-        try:
-            cart = Cart.objects.get(user_id=user_id)
-        except Cart.DoesNotExist:
-            raise NotFound('Cart not found for this user ')
-        return cart
+        queryset = Cart.objects.filter(user_id=user_id)
+
+        if not queryset.exists():
+            raise NotFound('Cart not found for this user')
+
+        return queryset
+
 
 
 
 class AddToCardView(generics.CreateAPIView):
     serializer_class = CartSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        decoded_token = unhash_token(self.request.headers)
-        user_id = decoded_token['user_id']
-        book_id = self.request.data.get('book_id')
-        try:
-            book = Book.objects.get(id=book_id)
-        except Book.DoesNotExist:
-            raise NotFound('Book not found')
 
-        cart, created = Cart.objects.get_or_create(user_id=user_id, book=book)
-        if not created:
-            raise serializers.ValidationError('Book already in cart ')
 
 
 
 
 class RemoveFromCartView(generics.DestroyAPIView):
+    serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, *args, **kwargs):
