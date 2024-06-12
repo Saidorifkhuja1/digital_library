@@ -44,7 +44,7 @@ class NewsUpdateAPIView(generics.UpdateAPIView):
 class NewsDetailAPIView(generics.RetrieveAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
-    permission_classes = [IsAdminUser]
+
     lookup_field = 'pk'
 
 class NewsDeleteAPIView(generics.DestroyAPIView):
