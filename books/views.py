@@ -209,7 +209,7 @@ class BookDownloadView(generics.GenericAPIView):
 
 
 class RecommendedBooksView(generics.ListAPIView):
-    serializer_class = BookBaseSerializer
+    serializer_class = BookUseSerializer
 
     def get_queryset(self):
         return Book.objects.all().order_by('-views', '-downloads')[:10]
@@ -269,9 +269,9 @@ class RemoveFromCartView(generics.DestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         decoded_token = unhash_token(request.headers)
-        user_id = decoded_token.get['user_id']
-        book_id = kwargs.get('book_id')
-
+        user_id = decoded_token.get('user_id')
+        book_id = self.kwargs.get('pk')
+        print(book_id)
         try:
             cart_item = Cart.objects.get(user_id=user_id, book_id=book_id)
         except Cart.DoesNotExist:
