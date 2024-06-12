@@ -21,7 +21,7 @@ class APIListPagination(PageNumberPagination):
 
 class BookListAPIView(generics.ListAPIView):
     queryset = Book.objects.all()
-    serializer_class = BookBaseSerializer
+    serializer_class = BookUseSerializer
     pagination_class = APIListPagination
 
 

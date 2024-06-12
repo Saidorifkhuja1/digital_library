@@ -57,7 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'phone_number'
-    REQUIRED_FIELDS = [ 'name', 'last_name']
+    REQUIRED_FIELDS = ['email', 'name', 'last_name']
 
     def __str__(self):
         return f'{self.name} {self.last_name}'
@@ -66,11 +66,4 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         return self.is_admin
 
-# class Notification(models.Model):
-#     user = models.ForeignKey(User, related_name='user_notification', on_delete=models.CASCADE)
-#     message = models.TextField()
-#     is_read = models.BooleanField(default=False)
-#     timestamp = models.DateTimeField(auto_now_add=True)
-#
-#     def __str__(self):
-#         return f'Notification for {self.user}'
+
