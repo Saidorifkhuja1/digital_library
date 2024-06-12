@@ -16,12 +16,19 @@ class BookSerializer(serializers.ModelSerializer):
         book = Book.objects.create(**validated_data)
         book.uploaded_by.add(user)
         return book
+
+
+
+
 class TypeSerializer(serializers.ModelSerializer):
     books = BookSerializer(many=True, read_only=True, source='book_set')
 
     class Meta:
         model = Type
         fields = ['id', 'name', 'books']
+
+
+
 
 class AuthorSerializer(serializers.ModelSerializer):
     books = BookSerializer(many=True, read_only=True)
@@ -31,12 +38,16 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'books']
 
 
+
+
 class BookUseSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     genre = TypeSerializer()
     class Meta:
         model = Book
         fields = ['id', 'title', 'author', 'genre', 'description', 'cover_image']
+
+
 
 class BookBaseSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
@@ -47,18 +58,16 @@ class BookBaseSerializer(serializers.ModelSerializer):
         read_only_fields = ['uploaded_by', 'views', 'downloads']
 
 
+
+
+
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['user', 'book', 'added_at']
 
 
-# class TypeSerializer(serializers.ModelSerializer):
-#     books = BookSerializer(many=True, read_only=True, source='book_set')
-#
-#     class Meta:
-#         model = Type
-#         fields = ['id', 'name', 'books']
+
 
 
 

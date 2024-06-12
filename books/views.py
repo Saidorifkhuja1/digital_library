@@ -9,8 +9,11 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework.pagination import PageNumberPagination
+
+
 
 
 class APIListPagination(PageNumberPagination):
@@ -42,23 +45,6 @@ class BookDetailAPIView(generics.RetrieveAPIView):
 
 
 
-# class BookDetailAPIView(generics.RetrieveAPIView):
-#     serializer_class = BookBaseSerializer
-#     queryset = Book.objects.all()
-#     permission_classes = [permissions.IsAuthenticated]
-#
-#     def retrieve(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#         instance.views += 1
-#         instance.save()
-#         serializer = self.get_serializer(instance)
-#         return Response(serializer.data)
-#
-#     def get_queryset(self):
-#         user = self.request.user
-#         if user.is_authenticated:
-#             return self.queryset.filter(author=user)
-#         return self.queryset.none()
 
 
 
@@ -68,6 +54,7 @@ class CreateBookAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save()
+
 
 
 
@@ -82,6 +69,9 @@ class UpdateBookAPIView(generics.UpdateAPIView):
         serializer.save()
 
 
+
+
+
 class DeleteBookAPIView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookBaseSerializer
@@ -92,7 +82,8 @@ class DeleteBookAPIView(generics.DestroyAPIView):
 
 
 
-class BookGenreAPIView(generics.ListAPIView):
+
+class BookGenreList(generics.ListAPIView):
     serializer_class = TypeSerializer
     queryset = Type.objects.all()
     pagination_class = APIListPagination
@@ -102,10 +93,75 @@ class BookGenreAPIView(generics.ListAPIView):
 
 
 
-class BookAuthorAPIView(generics.ListAPIView):
+class BookAuthorList(generics.ListAPIView):
     serializer_class = AuthorSerializer
     queryset = Author.objects.all()
     pagination_class = APIListPagination
+
+
+
+
+
+class BookGenreSearch(generics.ListAPIView):
+    serializer_class = BookBaseSerializer
+    queryset = Book.objects.all()
+    pagination_class = APIListPagination
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                name='name',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                required=True,  # Set required to True
+                description='Name of the genre'
+            ),
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        name = self.request.query_params.get("name", None)
+        if name:
+            query = self.queryset.filter(genre__name=name)
+        else:
+            query = self.queryset.none()
+        return query
+
+
+
+
+
+
+
+class BookAuthorSearch(generics.ListAPIView):
+    serializer_class = BookBaseSerializer
+    queryset = Book.objects.all()
+    pagination_class = APIListPagination
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                name='name',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                required=True,
+                description='Name of the author'
+            ),
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        name = self.request.query_params.get("name", None)
+        if name:
+            query = self.queryset.filter(author__name=name)
+        else:
+            query = self.queryset.none()
+        return query
+
 
 
 
