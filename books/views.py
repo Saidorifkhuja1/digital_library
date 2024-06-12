@@ -103,7 +103,7 @@ class BookAuthorList(generics.ListAPIView):
 
 
 class BookGenreSearch(generics.ListAPIView):
-    serializer_class = BookBaseSerializer
+    serializer_class = BookUseSerializer
     queryset = Book.objects.all()
     pagination_class = APIListPagination
 
@@ -136,7 +136,7 @@ class BookGenreSearch(generics.ListAPIView):
 
 
 class BookAuthorSearch(generics.ListAPIView):
-    serializer_class = BookBaseSerializer
+    serializer_class = BookUseSerializer
     queryset = Book.objects.all()
     pagination_class = APIListPagination
 
