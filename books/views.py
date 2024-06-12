@@ -227,14 +227,12 @@ class UserCartView(generics.ListAPIView):
     def get_queryset(self):
         decoded_token = unhash_token(self.request.headers)
         user_id = decoded_token['user_id']
-        queryset = Cart.objects.filter(user_id=user_id)
+        queryset = Cart.objects.filter(user__id=user_id)
 
         if not queryset.exists():
             raise NotFound('Cart not found for this user')
 
         return queryset
-
-
 
 
 class AddToCardView(generics.CreateAPIView):
@@ -246,24 +244,23 @@ class AddToCardView(generics.CreateAPIView):
         user_id = decoded_token.get('user_id')
         book_id = request.data.get('book')
 
-
-        book = get_object_or_404(Book, id = book_id)
-        user = get_object_or_404(User, id = user_id)
+        book = get_object_or_404(Book, id=book_id)
+        user = get_object_or_404(User, id=user_id)
 
         if not (user and book):
             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
-        if not Cart.objects.filter(book__id=book.id).exists():
+
+        print(Cart.objects.filter(book__id=book.id, user__id=user.id).exists())
+        if not Cart.objects.filter(book__id=book.id, user__id=user.id).exists():
             cart = Cart.objects.create(user=user, book=book)
         else:
             return Response({"error": "Book already in cart"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
         return Response(CartSerializer(cart).data, status=status.HTTP_201_CREATED)
     #
 
 
 class RemoveFromCartView(generics.DestroyAPIView):
+    queryset = Cart.objects.all()
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
 
@@ -273,15 +270,12 @@ class RemoveFromCartView(generics.DestroyAPIView):
         book_id = self.kwargs.get('pk')
         print(book_id)
         try:
-            cart_item = Cart.objects.get(user_id=user_id, book_id=book_id)
+            cart_item = Cart.objects.get(user__id=user_id, book__id=book_id)
         except Cart.DoesNotExist:
             raise NotFound("Book not found in cart")
 
         cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
 
 
 
