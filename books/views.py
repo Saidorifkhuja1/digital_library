@@ -307,8 +307,12 @@ class CheckBookInCartView(APIView):
         user = get_object_or_404(User, id=user_id)
         book = get_object_or_404(Book, id=book_id)
 
-        if Cart.objects.filter(user=user, book=book).exists():
-            return Response({"message": "Book is in cart"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "Book is not in cart"}, status=status.HTTP_200_OK)
+        is_in_cart = Cart.objects.filter(user=user, book=book).exists()
+
+        return Response(is_in_cart, status=status.HTTP_200_OK)
+
+        # if Cart.objects.filter(user=user, book=book).exists():
+        #     return Response({"message": "Book is in cart"}, status=status.HTTP_200_OK)
+        # else:
+        #     return Response({"message": "Book is not in cart"}, status=status.HTTP_200_OK)
 
