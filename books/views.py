@@ -14,6 +14,10 @@ from drf_yasg import openapi
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 from accounts.models import User
+from rest_framework.views import APIView
+
+
+
 
 
 
@@ -23,10 +27,16 @@ class APIListPagination(PageNumberPagination):
     max_page_size = 100
 
 
+
+
+
 class BookListAPIView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookUseSerializer
     pagination_class = APIListPagination
+
+
+
 
 
 
@@ -48,13 +58,13 @@ class BookDetailAPIView(generics.RetrieveAPIView):
 
 
 
-
 class CreateBookAPIView(generics.CreateAPIView):
     serializer_class = BookSerializer
     permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
         serializer.save()
+
 
 
 
@@ -211,6 +221,7 @@ class BookDownloadView(generics.GenericAPIView):
 class RecommendedBooksView(generics.ListAPIView):
     serializer_class = BookUseSerializer
 
+
     def get_queryset(self):
         return Book.objects.all().order_by('-views', '-downloads')[:10]
 
@@ -279,4 +290,25 @@ class RemoveFromCartView(generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class CheckBookInCartView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = BookInCartCheckSerializer
+    @swagger_auto_schema(
+        request_body= BookInCartCheckSerializer
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = BookInCartCheckSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        decoded_token = unhash_token(request.headers)
+        user_id = decoded_token.get('user_id')
+        book_id = serializer.validated_data['book_id']
+
+        user = get_object_or_404(User, id=user_id)
+        book = get_object_or_404(Book, id=book_id)
+
+        if Cart.objects.filter(user=user, book=book).exists():
+            return Response({"message": "Book is in cart"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Book is not in cart"}, status=status.HTTP_200_OK)
 

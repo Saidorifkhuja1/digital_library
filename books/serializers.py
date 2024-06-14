@@ -80,7 +80,5 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
+class BookInCartCheckSerializer(serializers.Serializer):
+    book_id = serializers.IntegerField()

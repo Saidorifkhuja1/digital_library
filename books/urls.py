@@ -17,7 +17,8 @@ urlpatterns = [
     path('get_cart/', UserCartView.as_view()),
     path('add_cart/', AddToCardView.as_view()),
     path('cart_delete/<int:pk>/', RemoveFromCartView.as_view()),
-    path('books/download/<int:pk>/', BookDownloadView.as_view(), name='book-download'),
+    path('books/download/<int:pk>/', BookDownloadView.as_view()),
+    path('books/check_in_cart/', CheckBookInCartView.as_view()),
 
     # path('reviews/', ReviewListCreateAPIView.as_view(), name='review-list-create'),
     # path('reviewsupdate/<int:pk>/', ReviewDetailAPIView.as_view(), name='review-detail'),
