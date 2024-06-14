@@ -60,7 +60,7 @@ class BookBaseSerializer(serializers.ModelSerializer):
 
 
 class CartUseSerializer(serializers.ModelSerializer):
-    book = BookBaseSerializer()
+    book = BookUseSerializer()
 
     class Meta:
         model = Cart
