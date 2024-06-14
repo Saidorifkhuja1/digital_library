@@ -24,7 +24,7 @@ class Book(models.Model):
     genre = models.ForeignKey(Type, related_name='type', on_delete=models.CASCADE)
     description = models.TextField()
     pdf = models.FileField(upload_to='books/', validators=[FileExtensionValidator(['pdf'])], blank=True, null=True)
-    cover_image = models.ImageField(upload_to='books/covers/', blank=True, null=True)
+    cover_image = models.ImageField(upload_to='books/covers/',default=False)
     uploaded_by = models.ForeignKey('accounts.User', on_delete=models.CASCADE, default=False)
     location = models.TextField(max_length=500, default=False)
     views = models.IntegerField(default=0)
