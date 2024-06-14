@@ -247,28 +247,56 @@ class UserCartView(generics.ListAPIView):
         return queryset
 
 
+
+
 class AddToCardView(generics.CreateAPIView):
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        decoded_token = unhash_token(request.headers)
-        user_id = decoded_token.get('user_id')
+        user = request.user
         book_id = request.data.get('book')
 
         book = get_object_or_404(Book, id=book_id)
-        user = get_object_or_404(User, id=user_id)
 
-        if not (user and book):
+        if not book:
             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        print(Cart.objects.filter(book__id=book.id, user__id=user.id).exists())
-        if not Cart.objects.filter(book__id=book.id, user__id=user.id).exists():
+        if not Cart.objects.filter(book=book, user=user).exists():
             cart = Cart.objects.create(user=user, book=book)
         else:
             return Response({"error": "Book already in cart"}, status=status.HTTP_400_BAD_REQUEST)
+
         return Response(CartSerializer(cart).data, status=status.HTTP_201_CREATED)
-    #
+
+
+
+
+
+# class AddToCardView(generics.CreateAPIView):
+#     serializer_class = CartSerializer
+#     permission_classes = [IsAuthenticated]
+#
+#     def create(self, request, *args, **kwargs):
+#         decoded_token = unhash_token(request.headers)
+#         user_id = decoded_token.get('user_id')
+#         book_id = request.data.get('book')
+#
+#         book = get_object_or_404(Book, id=book_id)
+#         user = get_object_or_404(User, id=user_id)
+#
+#         if not (user and book):
+#             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
+#
+#         print(Cart.objects.filter(book__id=book.id, user__id=user.id).exists())
+#         if not Cart.objects.filter(book__id=book.id, user__id=user.id).exists():
+#             cart = Cart.objects.create(user=user, book=book)
+#         else:
+#             return Response({"error": "Book already in cart"}, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(CartSerializer(cart).data, status=status.HTTP_201_CREATED)
+
+
+
 
 
 class RemoveFromCartView(generics.DestroyAPIView):
