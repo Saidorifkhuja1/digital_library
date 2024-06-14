@@ -52,16 +52,23 @@ class BookUseSerializer(serializers.ModelSerializer):
 class BookBaseSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     genre = TypeSerializer()
+
     class Meta:
         model = Book
         fields = '__all__'
         read_only_fields = ['uploaded_by', 'views', 'downloads']
 
 
+class CartUseSerializer(serializers.ModelSerializer):
+    book = BookBaseSerializer()
 
+    class Meta:
+        model = Cart
+        fields = '__all__'
 
 
 class CartSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Cart
         fields = ['user', 'book', 'added_at']
