@@ -45,7 +45,7 @@ class BookUseSerializer(serializers.ModelSerializer):
     genre = TypeSerializer()
     class Meta:
         model = Book
-        fields = ['id', 'title', 'author', 'genre', 'description', 'cover_image']
+        fields = ['id', 'title', 'author', 'genre', 'description', 'cover_image', 'views', 'downloads']
 
 
 
