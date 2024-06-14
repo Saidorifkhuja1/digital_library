@@ -5,7 +5,15 @@ from rest_framework import generics, permissions, status
 from rest_framework.permissions import IsAuthenticated
 from .utils import unhash_token
 from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, AuthenticationFailed
+from django.contrib.auth.hashers import make_password, check_password
+from rest_framework.views import APIView
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+
+
+
 
 class UserRegistrationAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -24,6 +32,10 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         return Response(token_data, status=status.HTTP_201_CREATED)
 
 
+
+
+
+
 class UpdateProfileView(generics.UpdateAPIView):
     serializer_class = UserUpdateSerializer
     permission_classes = [IsAuthenticated]
@@ -33,6 +45,41 @@ class UpdateProfileView(generics.UpdateAPIView):
         decoded_token = unhash_token(self.request.headers)
         user_id = decoded_token.get('user_id')
         return User.objects.filter(id=user_id)
+
+
+class PasswordResetView(APIView):
+    queryset = User.objects.all()
+    serializer_class = PasswordResetSerializer
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        request_body=PasswordResetSerializer
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        decoded_token = unhash_token(request.headers)
+        user_id = decoded_token.get("user_id")
+
+        if not user_id:
+            raise AuthenticationFailed("User ID not found in token")
+
+        old_password = serializer.validated_data.get("old_password")
+        new_password = serializer.validated_data.get("new_password")
+
+        user = get_object_or_404(User, id=user_id)
+
+        if not check_password(old_password, user.password):
+            return Response(
+                {"error": "Incorrect old password!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.password = make_password(new_password)
+        user.save()
+
+        return Response({"data": "Password changed successfully"}, status=status.HTTP_200_OK)
 
 
 class RetrieveProfileView(generics.RetrieveAPIView):
@@ -50,6 +97,10 @@ class RetrieveProfileView(generics.RetrieveAPIView):
         serializer = self.get_serializer(user)
 
         return Response(serializer.data)
+
+
+
+
 
 
 class DeleteProfileAPIView(generics.DestroyAPIView):

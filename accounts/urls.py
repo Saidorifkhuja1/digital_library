@@ -10,8 +10,7 @@ urlpatterns = [
     path('profile/retrieve/', RetrieveProfileView.as_view()),
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    # path('notifications/', NotificationListCreateAPIView.as_view(), name='notification-list-create'),
-    # path('notificationsupdate/<int:pk>/', NotificationDetailAPIView.as_view(), name='notification-detail'),
+    path('reset_password/', PasswordResetView.as_view()),
 
 ]
 

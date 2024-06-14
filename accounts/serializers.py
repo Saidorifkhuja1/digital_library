@@ -49,14 +49,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'phone_number', 'name', 'last_name', 'email', 'avatar']
 
 
-# class NotificationSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Notification
-#         fields = ['id', 'user', 'message', 'is_read', 'timestamp']
-#         read_only_fields = ['user', 'timestamp']
+class PasswordResetSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
 
+    class Meta:
+        fields = ['old_password', 'new_password']
 
-
-
+    def validate(self, data):
+        if data['old_password'] == data['new_password']:
+            raise serializers.ValidationError("The new password cannot be the same as the old password.")
+        return data
 
 
