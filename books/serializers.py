@@ -59,6 +59,10 @@ class BookBaseSerializer(serializers.ModelSerializer):
         read_only_fields = ['uploaded_by', 'views', 'downloads']
 
 
+
+
+
+
 class CartUseSerializer(serializers.ModelSerializer):
     book = BookUseSerializer()
 
