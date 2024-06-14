@@ -223,6 +223,7 @@ class RecommendedBooksView(generics.ListAPIView):
 class UserCartView(generics.ListAPIView):
     serializer_class = CartSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = APIListPagination
 
     def get_queryset(self):
         decoded_token = unhash_token(self.request.headers)
