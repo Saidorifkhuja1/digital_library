@@ -27,7 +27,10 @@ class APIListPagination(PageNumberPagination):
     max_page_size = 100
 
 
-
+class ListPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 class BookListAPIView(generics.ListAPIView):
@@ -220,7 +223,7 @@ class BookDownloadView(generics.GenericAPIView):
 
 class RecommendedBooksView(generics.ListAPIView):
     serializer_class = BookUseSerializer
-
+    pagination_class = ListPagination
 
     def get_queryset(self):
         return Book.objects.all().order_by('-views', '-downloads')[:10]
@@ -229,6 +232,10 @@ class RecommendedBooksView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+
+
 
 
 class UserCartView(generics.ListAPIView):
