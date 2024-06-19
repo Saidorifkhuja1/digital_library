@@ -223,7 +223,7 @@ class BookDownloadView(generics.GenericAPIView):
 
 class RecommendedBooksView(generics.ListAPIView):
     serializer_class = BookUseSerializer
-    pagination_class = ListPagination
+    # pagination_class = ListPagination
 
     def get_queryset(self):
         return Book.objects.all().order_by('-views', '-downloads')[:10]
