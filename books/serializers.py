@@ -43,10 +43,15 @@ class AuthorSerializer(serializers.ModelSerializer):
 class BookUseSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     genre = TypeSerializer()
+    truncated_description = serializers.SerializerMethodField()
     class Meta:
         model = Book
-        fields = ['id', 'title', 'author', 'genre', 'description', 'cover_image', 'views', 'downloads']
+        fields = ['id', 'title', 'author', 'genre', 'truncated_description', 'cover_image', 'views', 'downloads']
 
+    def get_truncated_description(self, obj):
+            if len(obj.description) > 100:  # Adjust the number to the desired length
+                return obj.description[:100] + '...'
+            return obj.description
 
 
 class BookBaseSerializer(serializers.ModelSerializer):
