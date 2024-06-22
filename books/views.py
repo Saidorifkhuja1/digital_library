@@ -5,7 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics, permissions, status
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, AuthenticationFailed
 from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -31,9 +31,54 @@ class APIListPagination(PageNumberPagination):
 
 
 class BookListAPIView(generics.ListAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookUseSerializer
+    serializer_class = BookBaseSerializer
     pagination_class = APIListPagination
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Book.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        decoded_token = None
+        user_id = None
+
+        if request.headers.get("Authorization"):
+            try:
+                decoded_token = unhash_token(request.headers)
+                user_id = decoded_token.get('user_id')
+            except AuthenticationFailed:
+                pass  # handle if needed
+
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            data = serializer.data
+
+            for book in data:
+                book_obj = Book.objects.get(id=book['id'])
+                # book['is_authored'] = book_obj.author.id == user_id if user_id else False
+                if user_id:
+                    book['is_in_cart'] = Cart.objects.filter(user_id=user_id, book_id=book['id']).exists()
+                else:
+                    book.pop('is_in_cart', None)  # Remove 'is_in_cart' for unauthenticated users
+
+            return self.get_paginated_response(data)
+
+        # serializer = self.get_serializer(queryset, many=True)
+        # data = serializer.data
+        #
+        # for book in data:
+        #     book_obj = Book.objects.get(id=book['id'])
+        #     # book['is_authored'] = book_obj.author.id == user_id if user_id else False
+        #     if user_id:
+        #         book['is_in_cart'] = Cart.objects.filter(user_id=user_id, book_id=book['id']).exists()
+        #     else:
+        #         book.pop('is_in_cart', None)  # Remove 'is_in_cart' for unauthenticated users
+        #
+        # return Response(data)
+
 
 
 
@@ -280,27 +325,7 @@ class AddToCardView(generics.CreateAPIView):
 
 
 
-# class AddToCardView(generics.CreateAPIView):
-#     serializer_class = CartSerializer
-#     permission_classes = [IsAuthenticated]
-#
-#     def create(self, request, *args, **kwargs):
-#         decoded_token = unhash_token(request.headers)
-#         user_id = decoded_token.get('user_id')
-#         book_id = request.data.get('book')
-#
-#         book = get_object_or_404(Book, id=book_id)
-#         user = get_object_or_404(User, id=user_id)
-#
-#         if not (user and book):
-#             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
-#
-#         print(Cart.objects.filter(book__id=book.id, user__id=user.id).exists())
-#         if not Cart.objects.filter(book__id=book.id, user__id=user.id).exists():
-#             cart = Cart.objects.create(user=user, book=book)
-#         else:
-#             return Response({"error": "Book already in cart"}, status=status.HTTP_400_BAD_REQUEST)
-#         return Response(CartSerializer(cart).data, status=status.HTTP_201_CREATED)
+
 
 
 
