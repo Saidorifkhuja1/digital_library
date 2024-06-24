@@ -31,7 +31,7 @@ class BothHttpAndHttpsSchemaGenerator(OpenAPISchemaGenerator):
 schema_view = get_schema_view(
    openapi.Info(
       title="Online Library  API",
-      default_version='v2',
+      default_version='v1',
    ),
    public=True,
    generator_class=BothHttpAndHttpsSchemaGenerator,

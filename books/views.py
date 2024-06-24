@@ -94,8 +94,22 @@ class BookDetailAPIView(generics.RetrieveAPIView):
         instance = self.get_object()
         instance.views += 1
         instance.save()
+
+        decoded_token = unhash_token(request.headers)
+        user_id = decoded_token.get('user_id')
+
+        if not user_id:
+            raise AuthenticationFailed("User ID not found in token")
+
+        is_in_cart = Cart.objects.filter(user_id=user_id, book_id=instance.id).exists()
+
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        data = serializer.data
+        data['is_in_cart'] = is_in_cart
+
+        return Response(data)
+
+
 
 
 
