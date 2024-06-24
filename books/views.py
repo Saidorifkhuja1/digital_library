@@ -307,8 +307,8 @@ class UserCartView(generics.ListAPIView):
         user_id = decoded_token['user_id']
         queryset = Cart.objects.filter(user__id=user_id)
 
-        if not queryset.exists():
-            raise NotFound('Cart not found for this user')
+        # if not queryset.exists():
+        #     raise NotFound('Cart not found for this user')
 
         return queryset
 
