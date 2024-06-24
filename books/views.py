@@ -31,7 +31,7 @@ class APIListPagination(PageNumberPagination):
 
 
 class BookListAPIView(generics.ListAPIView):
-    serializer_class = BookBaseSerializer
+    serializer_class = BookUseSerializer
     pagination_class = APIListPagination
     permission_classes = [permissions.AllowAny]
 
