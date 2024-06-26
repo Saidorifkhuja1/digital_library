@@ -27,6 +27,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
+
+
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -37,9 +40,17 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
-        instance.avatar = validated_data.get('avatar', instance.avatar)
+        # instance.avatar = validated_data.get('avatar', instance.avatar)
+        if 'avatar' in validated_data:
+            instance.avatar = validated_data['avatar']
+        elif not instance.avatar:
+            instance.avatar = 'accounts/avatars/avatar.jpg'
         instance.save()
         return instance
+
+
+
+
 
 
 
@@ -47,6 +58,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'phone_number', 'name', 'last_name', 'email', 'avatar']
+
+
+
+
 
 
 class PasswordResetSerializer(serializers.Serializer):
