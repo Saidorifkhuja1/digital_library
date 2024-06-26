@@ -50,7 +50,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=250)
     phone_number = models.CharField(validators=[PHONE_REGEX], max_length=21, unique=True, default="+998931112233")
     email = models.EmailField(unique=True)
-    avatar = models.ImageField(upload_to='accounts/avatars/', blank=True, null=True)
+    avatar = models.ImageField(upload_to='accounts/avatars/', default='accounts/avatars/avatar.png')
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
