@@ -20,7 +20,6 @@ from rest_framework.views import APIView
 
 
 
-
 class APIListPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'

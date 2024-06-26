@@ -1,5 +1,7 @@
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
+
+from books.permissions import IsAdminOrStaff
 from .serializers import *
 from rest_framework import generics, permissions, status
 from rest_framework.permissions import IsAuthenticated
@@ -18,6 +20,8 @@ from drf_yasg import openapi
 class UserRegistrationAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
+    permission_classes = [IsAdminOrStaff]
+
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
