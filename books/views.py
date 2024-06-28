@@ -241,7 +241,7 @@ class BookAuthorSearch(generics.ListAPIView):
 
 class SearchByNameAPIView(generics.ListAPIView):
     queryset = Book.objects.all()
-    serializer_class = BookBaseSerializer
+    serializer_class = BookUseSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['title']
 
