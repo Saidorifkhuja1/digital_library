@@ -1,7 +1,7 @@
 from django.core.validators import *
 from django.db import models
 from django.conf import settings
-
+from django.utils import timezone
 
 class Type(models.Model):
     name = models.CharField(max_length=2500)
@@ -29,6 +29,7 @@ class Book(models.Model):
     location = models.TextField(max_length=500, default=False)
     views = models.IntegerField(default=0)
     downloads = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
     def __str__(self):

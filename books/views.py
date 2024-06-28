@@ -35,7 +35,9 @@ class BookListAPIView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return Book.objects.all()
+        queryset = Book.objects.all().order_by('-created_at')
+        return queryset
+            # order_by('-date_added')
 
     def list(self, request, *args, **kwargs):
         decoded_token = None
@@ -304,7 +306,8 @@ class UserCartView(generics.ListAPIView):
     def get_queryset(self):
         decoded_token = unhash_token(self.request.headers)
         user_id = decoded_token['user_id']
-        queryset = Cart.objects.filter(user__id=user_id)
+        queryset = Cart.objects.filter(user__id=user_id).order_by('-added_at')
+            # .order_by('-added_at')
 
         # if not queryset.exists():
         #     raise NotFound('Cart not found for this user')
