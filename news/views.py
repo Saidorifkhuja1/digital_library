@@ -9,7 +9,7 @@ from .serializers import *
 
 
 class NewsListAPIView(generics.ListAPIView):
-    queryset = News.objects.all()
+    queryset = News.objects.all().order_by('-uploaded_at')
     serializer_class = NewsSerializer
     pagination_class = APIListPagination
 
@@ -27,6 +27,8 @@ class CreateNewsAPIView(generics.CreateAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
     permission_classes = [IsAdminUser]
+
+
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
