@@ -7,12 +7,14 @@ from .models import User
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
-    is_admin = serializers.BooleanField(write_only=False,default=False, required=False)
+    is_admin = serializers.BooleanField(write_only=False, default=False, required=False)
+    deletion_date = serializers.DateTimeField(required=False)
 
     class Meta:
         model = User
         fields = ['name', 'last_name', 'family_name', 'id_card', 'education_level',
-                  'work_place', 'education_place', 'home', 'phone_number', 'email', 'password', 'confirm_password', 'is_admin', 'avatar']
+                  'work_place', 'education_place', 'home', 'phone_number', 'email', 'password',
+                  'confirm_password', 'is_admin', 'avatar', 'deletion_date']
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -32,7 +34,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['name', 'last_name', 'family_name', 'id_card', 'education_level',
-                  'work_place', 'education_place', 'home', 'email', 'avatar']
+                  'work_place', 'education_place', 'home', 'email', 'avatar', 'deletion_date']
         read_only_fields = ['phone_number']
 
     def update(self, instance, validated_data):
@@ -45,6 +47,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.education_place = validated_data.get('education_place', instance.education_place)
         instance.home = validated_data.get('home', instance.home)
         instance.email = validated_data.get('email', instance.email)
+        instance.deletion_date = validated_data.get('deletion_date', instance.deletion_date)
         if 'avatar' in validated_data:
             instance.avatar = validated_data['avatar']
         elif not instance.avatar:
@@ -62,7 +65,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'phone_number', 'name', 'last_name', 'family_name', 'id_card', 'education_level',
-                  'work_place', 'education_place', 'home', 'email', 'avatar']
+                  'work_place', 'education_place', 'home', 'email', 'avatar', 'deletion_date']
 
 
 
