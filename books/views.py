@@ -86,30 +86,66 @@ class BookListAPIView(generics.ListAPIView):
 
 
 
+# class BookDetailAPIView(generics.RetrieveAPIView):
+#     serializer_class = BookBaseSerializer
+#     queryset = Book.objects.all()
+#     permission_classes = [IsAuthenticated]
+#
+#     def retrieve(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         instance.views += 1
+#         instance.save()
+#
+#         decoded_token = unhash_token(request.headers)
+#         user_id = decoded_token.get('user_id')
+#
+#         if not user_id:
+#             raise AuthenticationFailed("User ID not found in token")
+#
+#         is_in_cart = Cart.objects.filter(user_id=user_id, book_id=instance.id).exists()
+#
+#         serializer = self.get_serializer(instance)
+#         data = serializer.data
+#         data['is_in_cart'] = is_in_cart
+#
+#         return Response(data)
+
 class BookDetailAPIView(generics.RetrieveAPIView):
     serializer_class = BookBaseSerializer
     queryset = Book.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.AllowAny]  # Allow any user to access, but restrict data based on authentication
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.views += 1
         instance.save()
 
-        decoded_token = unhash_token(request.headers)
-        user_id = decoded_token.get('user_id')
+        user_authenticated = request.user.is_authenticated
 
-        if not user_id:
-            raise AuthenticationFailed("User ID not found in token")
+        if user_authenticated:
+            decoded_token = unhash_token(request.headers)
+            user_id = decoded_token.get('user_id')
 
-        is_in_cart = Cart.objects.filter(user_id=user_id, book_id=instance.id).exists()
+            if not user_id:
+                raise AuthenticationFailed("User ID not found in token")
 
+            is_in_cart = Cart.objects.filter(user_id=user_id, book_id=instance.id).exists()
+        else:
+            is_in_cart = False
+
+        # Use the appropriate serializer based on the authentication status
         serializer = self.get_serializer(instance)
         data = serializer.data
-        data['is_in_cart'] = is_in_cart
+
+        if not user_authenticated:
+            restricted_fields = ['location', 'uploaded_by', 'pdf', "is_in_cart"]
+            for field in restricted_fields:
+                data.pop(field, None)
+
+        else:
+            data['is_in_cart'] = is_in_cart
 
         return Response(data)
-
 
 
 
