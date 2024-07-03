@@ -50,7 +50,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(validators=[PHONE_REGEX], max_length=21, unique=True, default="+998931112233")
     email = models.EmailField(unique=True)
     avatar = models.ImageField(upload_to='accounts/avatars/', default='accounts/avatars/avatar.jpg')
-    deletion_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+    deletion_date = models.DateTimeField(default=timezone.now())
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 

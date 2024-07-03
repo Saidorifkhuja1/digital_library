@@ -1,14 +1,14 @@
-from rest_framework import serializers
-from django.contrib.auth.hashers import make_password
-from .models import User
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from rest_framework import serializers
+from django.utils import timezone
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .models import User
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
     is_admin = serializers.BooleanField(write_only=False, default=False, required=False)
-    deletion_date = serializers.DateTimeField(required=False)
+    deletion_date = serializers.DateTimeField(required=True)
 
     class Meta:
         model = User
@@ -85,7 +85,10 @@ class PasswordResetSerializer(serializers.Serializer):
         return data
 
 
-from django.utils import timezone
+
+
+
+
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -98,6 +101,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Perform standard validation and obtain user instance
         data = super().validate(attrs)
         user = self.user
+        print(user.deletion_date)
 
         # Additional check for deletion date
         if user.deletion_date and user.deletion_date <= timezone.now():
