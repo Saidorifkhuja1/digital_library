@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import User
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -85,3 +85,23 @@ class PasswordResetSerializer(serializers.Serializer):
         return data
 
 
+from django.utils import timezone
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        # Ensure the phone number is provided in the correct format
+        phone_number = attrs.get("phone_number")
+        if not phone_number:
+            raise serializers.ValidationError("Phone number is required.")
+
+        # Perform standard validation and obtain user instance
+        data = super().validate(attrs)
+        user = self.user
+
+        # Additional check for deletion date
+        if user.deletion_date and user.deletion_date <= timezone.now():
+            raise serializers.ValidationError("Your account has expired. Please contact support.")
+
+        # Return the token data
+        return data

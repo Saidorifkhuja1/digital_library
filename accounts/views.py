@@ -1,6 +1,7 @@
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
-
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import AllowAny
 from books.permissions import IsAdminOrStaff
 from .serializers import *
 from rest_framework import generics, permissions, status
@@ -11,7 +12,7 @@ from rest_framework.exceptions import NotFound, AuthenticationFailed
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+
 
 
 
@@ -35,7 +36,9 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         return Response(token_data, status=status.HTTP_201_CREATED)
 
 
-
+class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = (AllowAny,)
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class UpdateProfileView(generics.UpdateAPIView):

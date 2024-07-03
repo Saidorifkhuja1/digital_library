@@ -65,3 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_admin
+
+    @property
+    def formatted_deletion_date(self):
+        return self.deletion_date.strftime('%Y-%m-%dT%H:%M')
