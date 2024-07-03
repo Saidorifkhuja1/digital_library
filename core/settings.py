@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'news',
     "corsheaders",
     'drf_extra_fields',
-    # 'rest_framework_simplejwt.token_blacklist',
+
 
 
 ]
